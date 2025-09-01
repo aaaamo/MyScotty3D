@@ -1,6 +1,6 @@
 **Assignment 0 Report**
 
-AndrewID: XXXX
+AndrewID: daehongk
 
 (##) About this template
 
@@ -14,36 +14,36 @@ AndrewID: XXXX
 
 Step 1: Clone
 <div class="twentytwenty-container">
-    <img src="A0-writeup/reference/step1-github-ref-1.png" alt="Github-CLI">
-</div>
-or
-<div class="twentytwenty-container">
-    <img src="A0-writeup/reference/step1-github-ref-2.png" alt="Github-Web">
+    <img src="A0-writeup/1_github_repo.png" alt="Github-CLI">
 </div>
 
 Step 2: General Setup
 
 Visual Studio:
 <div class="twentytwenty-container">
-    <img src="A0-writeup/reference/step2-vs-ref.png" alt="Visual Studio">
+    <img src="A0-writeup/2_visual_studio.png" alt="Visual Studio">
 </div>
 
 Node:
 <div class="twentytwenty-container">
-    <img src="A0-writeup/reference/step2-node-ref.png" alt="Node">
+    <img src="A0-writeup/3_node.png" alt="Node">
 </div>
 
 Nest-libs:
 <div class="twentytwenty-container">
-    <img src="A0-writeup/reference/step2-nest-libs-ref.png" alt="Nest-libs">
+    <img src="A0-writeup/4_nest_libs.png" alt="Nest-libs">
 </div>
 
 Step 3: Build and Run
+
+GUI:
 <div class="twentytwenty-container">
-    <img src="A0-writeup/reference/step3-GUI-ref.png" alt="GUI">
+    <img src="A0-writeup/5_GUI.png" alt="GUI">
 </div>
+
+Tests:
 <div class="twentytwenty-container">
-    <img src="A0-writeup/reference/step3-tests-ref.png" alt="Run-tests">
+    <img src="A0-writeup/6_tests.png" alt="Run-tests">
 </div>
 
 (##) A0T2
@@ -53,13 +53,26 @@ Your completion of this task will be graded based on your `test.a0.task2.problem
 For each of the problems you solved in task 2, characterise the bug in your own words and explain one other scenario that may cause this 
 type of bug.
 
-Problem 1:
+Problem 1: 
+    type should be std::string. 
+    ";" omitted. 
+    std::cout typo. 
+    should add "#include <string>" for safety.
+    other scenarios: not closing parenthesis.
 
 Problem 2:
+    y / factor returns integer division.
+    changed factor to float to force float division.
+    other scenarios: 0.1 + 0.2 == 0.3
 
 Problem 3:
+    vector.end() points to the next position from the end.
+    *(one_to_ten.end() - 1) to get the last position.
+    other scenarios: calling some_vector.at(100) where it is out of bounds
 
 Problem 4:
+    (a == b) == c => (a == b && b == c)
+    other scenarios: a == b == c is same as (a == b) == c, and will create the same problem.
 
 
 (##) A0T3
