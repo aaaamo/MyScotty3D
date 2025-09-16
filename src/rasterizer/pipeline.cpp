@@ -531,12 +531,6 @@ void Pipeline<p, P, flags>::rasterize_triangle(
 		return bary;
 	};
 
-	auto interpolate_z = [&](float x, float y) -> float {
-		Vec3 bary = get_barycentric(x, y);
-		float z = bary.x * va.fb_position.z + bary.y * vb.fb_position.z + bary.z * vc.fb_position.z;
-		return z;
-	};
-
 	bool is_cw = cross(ab, ac).z < 0;
 
 
