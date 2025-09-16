@@ -412,20 +412,33 @@ void Pipeline<p, P, flags>::rasterize_line(
 			return std::abs(x - (std::floor(x) + 0.5f)) + std::abs(y - (std::floor(y) + 0.5f)) <= 0.5f;
 		};
 
-		int32_t t1 = static_cast<int32_t>(std::floor(major_start));
+		int32_t t1 = (int32_t)std::floor(major_start);
 		if (!is_inside_diamond(x1, y1) && ((major_start - t1) * step > 0.5f * step)) {
 			// starts from outside diamond and major axis is closer to end -> ignore
 			t1 += step;
 		}
-		int32_t t2 = static_cast<int32_t>(std::floor(major_end));
+		int32_t t2 = (int32_t)std::floor(major_end);
 		if (is_inside_diamond(x2, y2) || ((major_end - t2) * step < 0.5f * step)) {
 			// ends inside diamond or major axis is closer to start -> ignore
 			t2 -= step;
 		}
 
-		for (int32_t u = t1; u * step <= t2 * step; u += step) {
+		// swap t1 and t2 
+		if (major_start > major_end) {
+			auto _temp = t1;
+			t1 = t2;
+			t2 = _temp;
+		}
+
+		for (int32_t u = t1; u <= t2; u++) {
 			float u_center = u + 0.5f;
 			float w = (u_center - major_start) / (major_end - major_start);
+			// clip w in [0,1]
+			if (w < 0.0f) {
+				w = 0.0f;
+			} else if (w > 1.0f) {
+				w = 1.0f;
+			}
 			// interpolate v at u_center and find pixel center
 			float v = w * (minor_end - minor_start) + minor_start;
 			float v_center = std::floor(v) + 0.5f;
@@ -627,10 +640,10 @@ void Pipeline<p, P, flags>::rasterize_triangle(
 	};
 
 	
-	int32_t minx = static_cast<int32_t>(std::floor(std::min({va.fb_position.x, vb.fb_position.x, vc.fb_position.x})));
-	int32_t maxx = static_cast<int32_t>(std::ceil(std::max({va.fb_position.x, vb.fb_position.x, vc.fb_position.x})));
-	int32_t miny = static_cast<int32_t>(std::floor(std::min({va.fb_position.y, vb.fb_position.y, vc.fb_position.y})));
-	int32_t maxy = static_cast<int32_t>(std::ceil(std::max({va.fb_position.y, vb.fb_position.y, vc.fb_position.y})));
+	int32_t minx = (int32_t)std::floor(std::min({va.fb_position.x, vb.fb_position.x, vc.fb_position.x}));
+	int32_t maxx = (int32_t)std::ceil(std::max({va.fb_position.x, vb.fb_position.x, vc.fb_position.x}));
+	int32_t miny = (int32_t)std::floor(std::min({va.fb_position.y, vb.fb_position.y, vc.fb_position.y}));
+	int32_t maxy = (int32_t)std::ceil(std::max({va.fb_position.y, vb.fb_position.y, vc.fb_position.y}));
 
 
 	for (int32_t x = minx; x < maxx; x++) {
