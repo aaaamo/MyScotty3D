@@ -143,7 +143,23 @@ a line that goes over the edge of screen will result in different coordinates. M
 
 Insert a picture of your sample pattern here (up to you on how you created it):
 <div class="twentytwenty-container">
-    <img src="A1-writeup/reference/task7-sample-pattern.png" alt="Sample pattern">
+    <img src="A1-writeup/reference/A1T7-daehongk.png" alt="Sample pattern">
+</div>
+
+
+
+This pattern when divided up into 5x5 grid has one sample on each row and each column.
+All samples are also equidistant to each other and there's a sample in the center of the pixel as well, and I thought
+about giving it a bigger weight compared to the other samples but I didn't in the end.
+This pattern is strong against orthogonal lines compared to simple n x n grids because the pattern does not align with
+them.
+However, it is particularly weak against lines with slope of 2 or -0.5
+
+The custom pattern when repeated looks like this.
+
+
+<div class="twentytwenty-container">
+    <img src="A1-writeup/reference/A1T7.1-daehongk.png" alt="Sample pattern repeated">
 </div>
 
 Explanation of what your SamplePattern does and scenarios it would do well and poorly in:
@@ -155,8 +171,18 @@ checking that rasterizing the samplers scene will look decent.
 
 Your image:
 <div class="twentytwenty-container">
-    <img src="A1-writeup/reference/rasterize_image.png" alt="Your creation">
+    <img src="A1-writeup/reference/tubby5.png" alt="Your creation">
 </div>
+
+Source: https://poly.pizza/m/2iwlJG9K-ym
+
+* Imported Tubbs the Cat.
+* Applied a new Texture from a jpeg image.
+* Changed the mesh uv to each face.
+* Changed to trilinear sampling
+* Changed to 8x8 supersampling
+
+
 Explanation of what it is and how you made it:
 
 Any free model sources you need to credit?

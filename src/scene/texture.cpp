@@ -138,7 +138,7 @@ namespace Textures
 					{
 						for (uint32_t b = 0; b < 2; b++)
 						{
-							res += src.at(std::min(i * 2 + a, src.w), std::min(j * 2 + b, src.h));
+							res += src.at(std::min(i * 2 + a, src.w - 1), std::min(j * 2 + b, src.h - 1));
 						}
 					}
 					res *= 0.25;
