@@ -88,8 +88,12 @@ checking that rasterizing with different blend and depth modes will look decent.
 
 Reference image:
 <div class="twentytwenty-container">
-    <img src="A1-writeup/reference/task5-smooth-correct-triangles.png" alt="Rasterize smooth and correct cubes">
+    <img src="A1-writeup/reference/A1T5-daehongk.png" alt="Rasterize smooth and correct cubes">
 </div>
+
+Took about 30 minutes. I first didn't realize that inv_w was provided so I divided by each vertex's z coordinate, and
+had to figure out what was wrong.
+
 Please replace the above image with your own screenshot of the rasterized smooth and correct triangles cubes.
 This can be done by doing the following:
 * Open `media/js3d/A1-cubes.js3d` in the GUI,
@@ -102,12 +106,40 @@ checking that rasterizing flat triangle meshes will look decent.
 
 (##) A1T6 FINAL
 
+Took about an hour and a half in total.
+
+Had a few problems like:
+
+* in lod
+When both derivitaves are 0, it will return negative inf so I clipped it at 0 - not entirely sure if this is a
+good approach but I figured it would be okay since level of 0 = base image so you don't really need negative levels
+anyway.
+
+* also in lod,
+Didn't realize that I had to multiply the texture image pixel dimensions at first - took a while to
+figure that out.
+
+* in sample_bilinear
+I only ensured that x/y coordinates don't go over image.w/h but because I'm subtracting 0.5f to
+each coord, it would sometimes be negative and crash when calling image.at(x,y) where one of x,y is negative. So I
+clamped between (0, image.w/h) to fix that.
+
+
 You do not need any screenshots for this task.
 
 Your completion will be graded based on the reference `test.a1.task6.cpp` file and
 checking that rasterizing the samplers scene will look decent.
 
 (##) A1T7 FINAL
+
+Took about an hour.
+
+Didn't really have problems but not entirely sure my approach to shifting the vertices is correct.
+
+I looped the whole sequence starting from declaration of clipped_vertices, which means that the vertices are shifted and
+then clipped. That means that for each original vertex, in different shifts it can be on different pixels, and clipping
+a line that goes over the edge of screen will result in different coordinates. Maybe this is how it's intended?
+
 
 Insert a picture of your sample pattern here (up to you on how you created it):
 <div class="twentytwenty-container">

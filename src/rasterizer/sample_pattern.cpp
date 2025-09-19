@@ -1,24 +1,31 @@
 #include "sample_pattern.h"
 
-std::vector<SamplePattern> const& SamplePattern::all_patterns() {
+std::vector<SamplePattern> const &SamplePattern::all_patterns()
+{
 	// helper to make grid-like sampling patterns:
-	auto Grid = [](uint32_t w, uint32_t h = -1U, uint32_t id = -1U) {
-		if (h == -1U) h = w;
-		if (id == -1U) id = w * h;
+	auto Grid = [](uint32_t w, uint32_t h = -1U, uint32_t id = -1U)
+	{
+		if (h == -1U)
+			h = w;
+		if (id == -1U)
+			id = w * h;
 		std::vector<Vec3> centers_and_weights;
 		centers_and_weights.reserve(w * h);
 		float weight = 1.0f / (w * h);
-		for (uint32_t y = 0; y < h; ++y) {
-			for (uint32_t x = 0; x < w; ++x) {
+		for (uint32_t y = 0; y < h; ++y)
+		{
+			for (uint32_t x = 0; x < w; ++x)
+			{
 				centers_and_weights.emplace_back((x + 0.5f) / w, (y + 0.5f) / h, weight);
 			}
 		}
 		return SamplePattern(id, "Grid (" + std::to_string(w) + "x" + std::to_string(h) + ")",
-		                     centers_and_weights);
+							 centers_and_weights);
 	};
 
 	// A1T7: sample pattern
-	auto CreateYourOwnSamplePattern = []() {
+	auto CreateYourOwnSamplePattern = []()
+	{
 		// TODO: Create your own Sample Pattern
 		// Make any (literally any) SamplePattern that isn't one of the existing ones provided:
 		// ("Center", "Grid 2x2", "Grid 4x4", "Grid 8x8").
@@ -28,14 +35,28 @@ std::vector<SamplePattern> const& SamplePattern::all_patterns() {
 		// your SamplePattern is + more detailed your writeup is (such as with images or models for
 		// comparisons of these scenarios), the more extra credit can be awarded (no limit).
 
+		// PATTERN
+		// | | | |X| |
+		// |X| | | | |
+		// | | |X| | |
+		// | | | | |X|
+		// | |X| | | |
+
 		// Please don't change the name or id
 		const uint32_t id = 0;
 		const std::string name = "Custom Sample Pattern";
 		// This will cause it to segfault when used, so be sure to change it!
-		std::vector<Vec3> centers_and_weights = {};
+		std::vector<Vec3> centers_and_weights = {
+			Vec3{0.3f, 0.1f, 0.2f},
+			Vec3{0.9f, 0.3f, 0.2f},
+			Vec3{0.5f, 0.5f, 0.2f},
+			Vec3{0.1f, 0.7f, 0.2f},
+			Vec3{0.7f, 0.9f, 0.2f},
+		};
 		return SamplePattern(id, name, centers_and_weights);
 	};
-	static std::vector<SamplePattern> all = [&]() {
+	static std::vector<SamplePattern> all = [&]()
+	{
 		std::vector<SamplePattern> ret;
 		ret.emplace_back(1, "Center", std::vector<Vec3>{Vec3{0.5f, 0.5f, 1.0f}});
 		ret.emplace_back(Grid(2));
@@ -49,14 +70,18 @@ std::vector<SamplePattern> const& SamplePattern::all_patterns() {
 	return all;
 }
 
-SamplePattern const* SamplePattern::from_id(uint32_t id) {
-	for (SamplePattern const& sp : all_patterns()) {
-		if (sp.id == id) return &sp;
+SamplePattern const *SamplePattern::from_id(uint32_t id)
+{
+	for (SamplePattern const &sp : all_patterns())
+	{
+		if (sp.id == id)
+			return &sp;
 	}
 	return nullptr;
 }
 
-SamplePattern::SamplePattern(uint32_t id_, std::string const& name_,
-                             std::vector<Vec3> const& centers_and_weights_)
-	: id(id_), name(name_), centers_and_weights(centers_and_weights_) {
+SamplePattern::SamplePattern(uint32_t id_, std::string const &name_,
+							 std::vector<Vec3> const &centers_and_weights_)
+	: id(id_), name(name_), centers_and_weights(centers_and_weights_)
+{
 }

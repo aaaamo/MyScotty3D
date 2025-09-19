@@ -3,160 +3,235 @@
 
 #include <iostream>
 
-namespace Textures {
+namespace Textures
+{
 
+	Spectrum sample_nearest(HDR_Image const &image, Vec2 uv)
+	{
+		// clamp texture coordinates, convert to [0,w]x[0,h] pixel space:
+		float x = image.w * std::clamp(uv.x, 0.0f, 1.0f);
+		float y = image.h * std::clamp(uv.y, 0.0f, 1.0f);
 
-Spectrum sample_nearest(HDR_Image const &image, Vec2 uv) {
-	//clamp texture coordinates, convert to [0,w]x[0,h] pixel space:
-	float x = image.w * std::clamp(uv.x, 0.0f, 1.0f);
-	float y = image.h * std::clamp(uv.y, 0.0f, 1.0f);
+		// the pixel with the nearest center is the pixel that contains (x,y):
+		int32_t ix = int32_t(std::floor(x));
+		int32_t iy = int32_t(std::floor(y));
 
-	//the pixel with the nearest center is the pixel that contains (x,y):
-	int32_t ix = int32_t(std::floor(x));
-	int32_t iy = int32_t(std::floor(y));
+		// texture coordinates of (1,1) map to (w,h), and need to be reduced:
+		ix = std::min(ix, int32_t(image.w) - 1);
+		iy = std::min(iy, int32_t(image.h) - 1);
 
-	//texture coordinates of (1,1) map to (w,h), and need to be reduced:
-	ix = std::min(ix, int32_t(image.w) - 1);
-	iy = std::min(iy, int32_t(image.h) - 1);
+		return image.at(ix, iy);
+	}
 
-	return image.at(ix, iy);
-}
+	Spectrum sample_bilinear(HDR_Image const &image, Vec2 uv)
+	{
+		// A1T6: sample_bilinear
+		// TODO: implement bilinear sampling strategy on texture 'image'
 
-Spectrum sample_bilinear(HDR_Image const &image, Vec2 uv) {
-	// A1T6: sample_bilinear
-	//TODO: implement bilinear sampling strategy on texture 'image'
+		float x = image.w * std::clamp(uv.x, 0.0f, 1.0f);
+		float y = image.h * std::clamp(uv.y, 0.0f, 1.0f);
 
-	return sample_nearest(image, uv); //placeholder so image doesn't look blank
-}
+		int32_t x0 = int32_t(std::floor(x - 0.5f));
+		int32_t x1 = x0 + 1;
+		int32_t y0 = int32_t(std::floor(y - 0.5f));
+		int32_t y1 = y0 + 1;
 
+		float dx = (x - 0.5f) - x0;
+		float dy = (y - 0.5f) - y0;
 
-Spectrum sample_trilinear(HDR_Image const &base, std::vector< HDR_Image > const &levels, Vec2 uv, float lod) {
-	// A1T6: sample_trilinear
-	//TODO: implement trilinear sampling strategy on using mip-map 'levels'
+		x0 = std::clamp(x0, 0, int32_t(image.w) - 1);
+		x1 = std::clamp(x1, 0, int32_t(image.w) - 1);
+		y0 = std::clamp(y0, 0, int32_t(image.h) - 1);
+		y1 = std::clamp(y1, 0, int32_t(image.h) - 1);
 
-	return sample_nearest(base, uv); //placeholder so image doesn't look blank
-}
+		Spectrum tex00 = image.at(x0, y0);
+		Spectrum tex01 = image.at(x0, y1);
+		Spectrum tex10 = image.at(x1, y0);
+		Spectrum tex11 = image.at(x1, y1);
 
-/*
- * generate_mipmap- generate mipmap levels from a base image.
- *  base: the base image
- *  levels: pointer to vector of levels to fill (must not be null)
- *
- * generates a stack of levels [1,n] of sizes w_i, h_i, where:
- *   w_i = max(1, floor(w_{i-1})/2)
- *   h_i = max(1, floor(h_{i-1})/2)
- *  with:
- *   w_0 = base.w
- *   h_0 = base.h
- *  and n is the smalles n such that w_n = h_n = 1
- *
- * each level should be calculated by downsampling a blurred version
- * of the previous level to remove high-frequency detail.
- *
- */
-void generate_mipmap(HDR_Image const &base, std::vector< HDR_Image > *levels_) {
-	assert(levels_);
-	auto &levels = *levels_;
+		Spectrum texlo = (1 - dx) * tex00 + dx * tex10;
+		Spectrum texhi = (1 - dx) * tex01 + dx * tex11;
 
+		return (1 - dy) * texlo + dy * texhi;
+	}
 
-	{ // allocate sublevels sufficient to scale base image all the way to 1x1:
-		int32_t num_levels = static_cast<int32_t>(std::log2(std::max(base.w, base.h)));
-		assert(num_levels >= 0);
+	Spectrum sample_trilinear(HDR_Image const &base, std::vector<HDR_Image> const &levels, Vec2 uv, float lod)
+	{
+		// A1T6: sample_trilinear
+		// TODO: implement trilinear sampling strategy on using mip-map 'levels'
 
-		levels.clear();
-		levels.reserve(num_levels);
+		int32_t levels_num = int32_t(levels.size());
+		int32_t lodlo = int32_t(std::floor(lod));
+		float dlod = lod - lodlo;
 
-		uint32_t width = base.w;
-		uint32_t height = base.h;
-		for (int32_t i = 0; i < num_levels; ++i) {
-			assert(!(width == 1 && height == 1)); //would have stopped before this if num_levels was computed correctly
+		const HDR_Image &levello = (lodlo - 1 < 0) ? base : levels[std::min(lodlo - 1, levels_num - 1)];
+		const HDR_Image &levelhi = (lodlo < 0) ? base : levels[std::min(lodlo, levels_num - 1)];
 
-			width = std::max(1u, width / 2u);
-			height = std::max(1u, height / 2u);
+		Spectrum speclo = sample_bilinear(levello, uv);
+		Spectrum spechi = sample_bilinear(levelhi, uv);
 
-			levels.emplace_back(width, height);
+		return (1 - dlod) * speclo + dlod * spechi;
+	}
+
+	/*
+	 * generate_mipmap- generate mipmap levels from a base image.
+	 *  base: the base image
+	 *  levels: pointer to vector of levels to fill (must not be null)
+	 *
+	 * generates a stack of levels [1,n] of sizes w_i, h_i, where:
+	 *   w_i = max(1, floor(w_{i-1})/2)
+	 *   h_i = max(1, floor(h_{i-1})/2)
+	 *  with:
+	 *   w_0 = base.w
+	 *   h_0 = base.h
+	 *  and n is the smalles n such that w_n = h_n = 1
+	 *
+	 * each level should be calculated by downsampling a blurred version
+	 * of the previous level to remove high-frequency detail.
+	 *
+	 */
+	void generate_mipmap(HDR_Image const &base, std::vector<HDR_Image> *levels_)
+	{
+		assert(levels_);
+		auto &levels = *levels_;
+
+		{ // allocate sublevels sufficient to scale base image all the way to 1x1:
+			int32_t num_levels = static_cast<int32_t>(std::log2(std::max(base.w, base.h)));
+			assert(num_levels >= 0);
+
+			levels.clear();
+			levels.reserve(num_levels);
+
+			uint32_t width = base.w;
+			uint32_t height = base.h;
+			for (int32_t i = 0; i < num_levels; ++i)
+			{
+				assert(!(width == 1 && height == 1)); // would have stopped before this if num_levels was computed correctly
+
+				width = std::max(1u, width / 2u);
+				height = std::max(1u, height / 2u);
+
+				levels.emplace_back(width, height);
+			}
+			assert(width == 1 && height == 1);
+			assert(levels.size() == uint32_t(num_levels));
 		}
-		assert(width == 1 && height == 1);
-		assert(levels.size() == uint32_t(num_levels));
+
+		// now fill in the levels using a helper:
+		// downsample:
+		//  fill in dst to represent the low-frequency component of src
+		auto downsample = [](HDR_Image const &src, HDR_Image &dst)
+		{
+			// dst is half the size of src in each dimension:
+			assert(std::max(1u, src.w / 2u) == dst.w);
+			assert(std::max(1u, src.h / 2u) == dst.h);
+
+			// A1T6: generate
+			// TODO: Write code to fill the levels of the mipmap hierarchy by downsampling
+
+			for (uint32_t i = 0; i < dst.w; i++)
+			{
+				for (uint32_t j = 0; j < dst.h; j++)
+				{
+					Spectrum res;
+					for (uint32_t a = 0; a < 2; a++)
+					{
+						for (uint32_t b = 0; b < 2; b++)
+						{
+							res += src.at(std::min(i * 2 + a, src.w), std::min(j * 2 + b, src.h));
+						}
+					}
+					res *= 0.25;
+					dst.at(i, j) = res;
+				}
+			}
+
+			// Be aware that the alignment of the samples in dst and src will be different depending on whether the image is even or odd.
+		};
+
+		std::cout << "Regenerating mipmap (" << levels.size() << " levels): [" << base.w << "x" << base.h << "]";
+		std::cout.flush();
+		for (uint32_t i = 0; i < levels.size(); ++i)
+		{
+			HDR_Image const &src = (i == 0 ? base : levels[i - 1]);
+			HDR_Image &dst = levels[i];
+			std::cout << " -> [" << dst.w << "x" << dst.h << "]";
+			std::cout.flush();
+
+			downsample(src, dst);
+		}
+		std::cout << std::endl;
 	}
 
-	//now fill in the levels using a helper:
-	//downsample:
-	// fill in dst to represent the low-frequency component of src
-	auto downsample = [](HDR_Image const &src, HDR_Image &dst) {
-		//dst is half the size of src in each dimension:
-		assert(std::max(1u, src.w / 2u) == dst.w);
-		assert(std::max(1u, src.h / 2u) == dst.h);
-
-		// A1T6: generate
-		//TODO: Write code to fill the levels of the mipmap hierarchy by downsampling
-
-		//Be aware that the alignment of the samples in dst and src will be different depending on whether the image is even or odd.
-
-	};
-
-	std::cout << "Regenerating mipmap (" << levels.size() << " levels): [" << base.w << "x" << base.h << "]";
-	std::cout.flush();
-	for (uint32_t i = 0; i < levels.size(); ++i) {
-		HDR_Image const &src = (i == 0 ? base : levels[i-1]);
-		HDR_Image &dst = levels[i];
-		std::cout << " -> [" << dst.w << "x" << dst.h << "]"; std::cout.flush();
-
-		downsample(src, dst);
+	Image::Image(Sampler sampler_, HDR_Image const &image_)
+	{
+		sampler = sampler_;
+		image = image_.copy();
+		update_mipmap();
 	}
-	std::cout << std::endl;
-	
-}
 
-Image::Image(Sampler sampler_, HDR_Image const &image_) {
-	sampler = sampler_;
-	image = image_.copy();
-	update_mipmap();
-}
-
-Spectrum Image::evaluate(Vec2 uv, float lod) const {
-	if (image.w == 0 && image.h == 0) return Spectrum();
-	if (sampler == Sampler::nearest) {
-		return sample_nearest(image, uv);
-	} else if (sampler == Sampler::bilinear) {
-		return sample_bilinear(image, uv);
-	} else {
-		return sample_trilinear(image, levels, uv, lod);
+	Spectrum Image::evaluate(Vec2 uv, float lod) const
+	{
+		if (image.w == 0 && image.h == 0)
+			return Spectrum();
+		if (sampler == Sampler::nearest)
+		{
+			return sample_nearest(image, uv);
+		}
+		else if (sampler == Sampler::bilinear)
+		{
+			return sample_bilinear(image, uv);
+		}
+		else
+		{
+			return sample_trilinear(image, levels, uv, lod);
+		}
 	}
-}
 
-void Image::update_mipmap() {
-	if (sampler == Sampler::trilinear) {
-		generate_mipmap(image, &levels);
-	} else {
-		levels.clear();
+	void Image::update_mipmap()
+	{
+		if (sampler == Sampler::trilinear)
+		{
+			generate_mipmap(image, &levels);
+		}
+		else
+		{
+			levels.clear();
+		}
 	}
-}
 
-GL::Tex2D Image::to_gl() const {
-	return image.to_gl(1.0f);
-}
+	GL::Tex2D Image::to_gl() const
+	{
+		return image.to_gl(1.0f);
+	}
 
-void Image::make_valid() {
-	update_mipmap();
-}
+	void Image::make_valid()
+	{
+		update_mipmap();
+	}
 
-Spectrum Constant::evaluate(Vec2 uv, float lod) const {
-	return color * scale;
-}
+	Spectrum Constant::evaluate(Vec2 uv, float lod) const
+	{
+		return color * scale;
+	}
 
 } // namespace Textures
-bool operator!=(const Textures::Constant& a, const Textures::Constant& b) {
+bool operator!=(const Textures::Constant &a, const Textures::Constant &b)
+{
 	return a.color != b.color || a.scale != b.scale;
 }
 
-bool operator!=(const Textures::Image& a, const Textures::Image& b) {
+bool operator!=(const Textures::Image &a, const Textures::Image &b)
+{
 	return a.image != b.image;
 }
 
-bool operator!=(const Texture& a, const Texture& b) {
-	if (a.texture.index() != b.texture.index()) return false;
+bool operator!=(const Texture &a, const Texture &b)
+{
+	if (a.texture.index() != b.texture.index())
+		return false;
 	return std::visit(
-		[&](const auto& data) { return data != std::get<std::decay_t<decltype(data)>>(b.texture); },
+		[&](const auto &data)
+		{ return data != std::get<std::decay_t<decltype(data)>>(b.texture); },
 		a.texture);
 }

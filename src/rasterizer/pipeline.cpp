@@ -35,6 +35,12 @@ void Pipeline<primitive_type, Program, flags>::run(std::vector<Vertex> const& ve
 		shaded_vertices.emplace_back(sv);
 	}
 
+
+	std::vector< Vec3 > const &samples = framebuffer.sample_pattern.centers_and_weights;
+	for (uint32_t s = 0; s < samples.size(); s++) {
+	float s_x = samples[s].x;
+	float s_y = samples[s].y;
+
 	//--------------------------
 	// assemble + clip + homogeneous divide vertices:
 	std::vector<ClippedVertex> clipped_vertices;
@@ -59,8 +65,8 @@ void Pipeline<primitive_type, Program, flags>::run(std::vector<Vertex> const& ve
 		0.5f
 	};
 	Vec3 const clip_to_fb_offset = Vec3{
-		0.5f * framebuffer.width,
-		0.5f * framebuffer.height,
+		0.5f * framebuffer.width + (s_x - 0.5f),
+		0.5f * framebuffer.height + (s_y - 0.5f),
 		0.5f
 	};
 
@@ -128,8 +134,8 @@ void Pipeline<primitive_type, Program, flags>::run(std::vector<Vertex> const& ve
 		}
 
 		// local names that refer to destination sample in framebuffer:
-		float& fb_depth = framebuffer.depth_at(x, y, 0);
-		Spectrum& fb_color = framebuffer.color_at(x, y, 0);
+		float& fb_depth = framebuffer.depth_at(x, y, s);
+		Spectrum& fb_color = framebuffer.color_at(x, y, s);
 
 
 		// depth test:
@@ -189,6 +195,7 @@ void Pipeline<primitive_type, Program, flags>::run(std::vector<Vertex> const& ve
 			     out_of_range);
 		}
 	}
+}
 }
 
 // -------------------------------------------------------------------------
