@@ -36,11 +36,6 @@ void Pipeline<primitive_type, Program, flags>::run(std::vector<Vertex> const& ve
 	}
 
 
-	std::vector< Vec3 > const &samples = framebuffer.sample_pattern.centers_and_weights;
-	for (uint32_t s = 0; s < samples.size(); s++) {
-	float s_x = samples[s].x;
-	float s_y = samples[s].y;
-
 	//--------------------------
 	// assemble + clip + homogeneous divide vertices:
 	std::vector<ClippedVertex> clipped_vertices;
@@ -65,8 +60,8 @@ void Pipeline<primitive_type, Program, flags>::run(std::vector<Vertex> const& ve
 		0.5f
 	};
 	Vec3 const clip_to_fb_offset = Vec3{
-		0.5f * framebuffer.width + (s_x - 0.5f),
-		0.5f * framebuffer.height + (s_y - 0.5f),
+		0.5f * framebuffer.width,
+		0.5f * framebuffer.height,
 		0.5f
 	};
 
@@ -93,22 +88,40 @@ void Pipeline<primitive_type, Program, flags>::run(std::vector<Vertex> const& ve
 		static_assert(primitive_type == PrimitiveType::Lines, "Unsupported primitive type.");
 	}
 
+
+	std::vector< Vec3 > const &samples = framebuffer.sample_pattern.centers_and_weights;
+	for (uint32_t s = 0; s < samples.size(); s++) {
+	float s_x = samples[s].x;
+	float s_y = samples[s].y;
+
 	//--------------------------
 	// rasterize primitives:
 
 	std::vector<Fragment> fragments;
 
+	std::vector<ClippedVertex> offset_clipped_vertices;
+
+	for (auto cv : clipped_vertices) {
+		ClippedVertex ocv = cv;
+		ocv.fb_position += Vec3{0.5f - s_x, 0.5f - s_y, 0.0f};
+		offset_clipped_vertices.emplace_back(ocv);
+	}
+
 	// helper used to put output of rasterization functions into fragments:
-	auto emit_fragment = [&](Fragment const& f) { fragments.emplace_back(f); };
+	auto emit_fragment = [&](Fragment const& f) { 
+		Fragment newFrag = f;
+		newFrag.fb_position += Vec3{s_x - 0.5f, s_y - 0.5f, 0.0f};
+		fragments.emplace_back(newFrag); 
+	};
 
 	// actually do rasterization:
 	if constexpr (primitive_type == PrimitiveType::Lines) {
-		for (uint32_t i = 0; i + 1 < clipped_vertices.size(); i += 2) {
-			rasterize_line(clipped_vertices[i], clipped_vertices[i + 1], emit_fragment);
+		for (uint32_t i = 0; i + 1 < offset_clipped_vertices.size(); i += 2) {
+			rasterize_line(offset_clipped_vertices[i], offset_clipped_vertices[i + 1], emit_fragment);
 		}
 	} else if constexpr (primitive_type == PrimitiveType::Triangles) {
-		for (uint32_t i = 0; i + 2 < clipped_vertices.size(); i += 3) {
-			rasterize_triangle(clipped_vertices[i], clipped_vertices[i + 1], clipped_vertices[i + 2], emit_fragment);
+		for (uint32_t i = 0; i + 2 < offset_clipped_vertices.size(); i += 3) {
+			rasterize_triangle(offset_clipped_vertices[i], offset_clipped_vertices[i + 1], offset_clipped_vertices[i + 2], emit_fragment);
 		}
 	} else {
 		static_assert(primitive_type == PrimitiveType::Lines, "Unsupported primitive type.");

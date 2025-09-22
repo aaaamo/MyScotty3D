@@ -140,6 +140,13 @@ I looped the whole sequence starting from declaration of clipped_vertices, which
 then clipped. That means that for each original vertex, in different shifts it can be on different pixels, and clipping
 a line that goes over the edge of screen will result in different coordinates. Maybe this is how it's intended?
 
+// edit: changed the loop to only go over rasterizing. made a new vector offset_clipped_vertices to feed as input to
+rasterize_line and rasterize_triangle function. This will output fragments at 0.5, 0.5 so I offset the actually emitted
+fragment's fb_position inside the emit_fragment helper function.
+
+* offset_clipped_vertices: offset by (0.5f - s_x, 0.5f - s_y, 0.0f)
+* emit_fragment: offset by (s_x - 0.5f, s_y - 0.5f, 0.0f)
+
 
 Insert a picture of your sample pattern here (up to you on how you created it):
 <div class="twentytwenty-container">
