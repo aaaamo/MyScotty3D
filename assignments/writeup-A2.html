@@ -1,10 +1,11 @@
 **Assignment 2 Report**
 
-AndrewID: XXXX
+AndrewID: daehongk
 
 (##) About this template
 
-* If you choose to implement a task, please **CLEARLY** indicate that you implemented it. You can do this by adding `<font size="10"> IMPLEMENTED </font>` or something similar to the task.
+* If you choose to implement a task, please **CLEARLY** indicate that you implemented it. You can do this by adding `
+<font size="10"> IMPLEMENTED </font>` or something similar to the task.
 
 * You can view your writeup by opening it in a browser - right click this file and open with your browser of choice.
 
@@ -16,76 +17,109 @@ AndrewID: XXXX
 
 (##) A2L1 CHECKPOINT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
+
+- Took 1~2 hours
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.l1.cpp` file and 
+- reject if vertices are duplicated for this edge or any edges connected to it.
+
+- reject if the edges before or after the target edge share the same set of faces - continuous edges
+
+- reject if the flip result edge already exists
+
+Your completion will be graded based on the reference `test.a2.l1.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2L2 CHECKPOINT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
+
+- Took 0.5~1 hours
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.l2.cpp` file and 
+- None - that needed specific testing to reject
+
+Your completion will be graded based on the reference `test.a2.l2.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2L3 CHECKPOINT
 
-You do not need any screenshots for this task. 
+- Took 3 hours give or take.
+
+- Testing for different edge cases and making sure it runs on the GUI was a pain
+
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.l3.cpp` file and 
+- reject if v1 and v2 are on separate sides of boundaries -> collapsing this edge will create a sort of bottleneck that
+makes it not manifold
+
+- reject if there's a vertex that's previously connected to both v1 and v2, but not part of any face that is connected
+to the edge. -> collapsing this edge will create fins
+
+- reject if the total number of newly connected vertices is less than 2
+
+- didn't reject tetrahedrons because I think the result (a triangle mesh with both faces) is manifold? Not 100% sure...
+
+Your completion will be graded based on the reference `test.a2.l3.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2L4 CHECKPOINT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
+
+- Took about an hour.
+
+- It works on the GUI but not sure if it's related to this function but moving the mouse to extrude a face doesn't work
+intuitively
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.l4.cpp` file and 
+- reject if face is a boundary face
+
+Your completion will be graded based on the reference `test.a2.l4.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2G1 FINAL
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a2.g1.cpp` file and 
+Your completion will be graded based on the reference `test.a2.g1.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2G2 FINAL
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a2.g2.cpp` file and 
+Your completion will be graded based on the reference `test.a2.g2.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2G3 FINAL
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a2.g3.cpp` file and 
+Your completion will be graded based on the reference `test.a2.g3.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2GO1 CHOICE FINAL
 
 **Global Operation Completed: **
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference file for the operation of choice and 
+Your completion will be graded based on the reference file for the operation of choice and
 checking that the operation works in the GUI.
 
 (##) CREATED MODEL FINAL
@@ -100,108 +134,108 @@ Any free model sources you need to credit?
 
 (##) A2LX1 EXTRA CREDIT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.lx1.cpp` file and 
+Your completion will be graded based on the reference `test.a2.lx1.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2LX2 EXTRA CREDIT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.lx2.cpp` file and 
+Your completion will be graded based on the reference `test.a2.lx2.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2LX3 EXTRA CREDIT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.lx3.cpp` file and 
+Your completion will be graded based on the reference `test.a2.lx3.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2LX4 EXTRA CREDIT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.lx4.cpp` file and 
+Your completion will be graded based on the reference `test.a2.lx4.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2LX5 EXTRA CREDIT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.lx5.cpp` file and 
+Your completion will be graded based on the reference `test.a2.lx5.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2LX6 EXTRA CREDIT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.lx6.cpp` file and 
+Your completion will be graded based on the reference `test.a2.lx6.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2LX7 EXTRA CREDIT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.lx7.cpp` file and 
+Your completion will be graded based on the reference `test.a2.lx7.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2LX8 EXTRA CREDIT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
 **What edge cases did you handle?**
 
-*  Answer here:
+* Answer here:
 
-Your completion will be graded based on the reference `test.a2.lx8.cpp` file and 
+Your completion will be graded based on the reference `test.a2.lx8.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2GO2 CHOICE EXTRA CREDIT
 
 **Global Operation Completed: **
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference file for the operation of choice and 
+Your completion will be graded based on the reference file for the operation of choice and
 checking that the operation works in the GUI.
 
 (##) A2GO3 CHOICE EXTRA CREDIT
 
 **Global Operation Completed: **
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference file for the operation of choice and 
+Your completion will be graded based on the reference file for the operation of choice and
 checking that the operation works in the GUI.
 
 (##) Feedback
@@ -209,13 +243,20 @@ checking that the operation works in the GUI.
 Use this section to provide feedback about the assignment.
 
 <!--- Markdeep & image comparison library - probably no need to change anything below -->
-<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style>
-<script src="resources/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+<style class="fallback">
+    body {
+        visibility: hidden;
+        white-space: pre;
+        font-family: monospace
+    }
+</style>
+<script src="resources/markdeep.min.js"></script>
+<script>window.alreadyProcessedMarkdeep || (document.body.style.visibility = "visible")</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="resources/jquery.event.move.js"></script>
 <script src="resources/jquery.twentytwenty.js"></script>
 <link href="resources/offcanvas.css" rel="stylesheet">
 <link href="resources/twentytwenty.css" rel="stylesheet" type="text/css" />
 <script>
-$(window).load(function(){$(".twentytwenty-container").twentytwenty({default_offset_pct: 0.5});});
+    $(window).load(function () { $(".twentytwenty-container").twentytwenty({ default_offset_pct: 0.5 }); });
 </script>

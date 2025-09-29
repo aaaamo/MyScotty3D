@@ -1,20 +1,28 @@
 #include "test.h"
 #include "geometry/halfedge.h"
+#include <iostream>
 
-static void expect_flip(Halfedge_Mesh &mesh, Halfedge_Mesh::EdgeRef edge, Halfedge_Mesh const &after) {
-	if (auto ret = mesh.flip_edge(edge)) {
-		if (auto msg = mesh.validate()) {
+static void expect_flip(Halfedge_Mesh &mesh, Halfedge_Mesh::EdgeRef edge, Halfedge_Mesh const &after)
+{
+	if (auto ret = mesh.flip_edge(edge))
+	{
+		if (auto msg = mesh.validate())
+		{
 			throw Test::error("Invalid mesh: " + msg.value().second);
 		}
 		// check if returned edge is the same edge
-		if (ret != edge) {
+		if (ret != edge)
+		{
 			throw Test::error("Did not return the same edge!");
 		}
 		// check mesh shape:
-		if (auto difference = Test::differs(mesh, after, Test::CheckAllBits)) {
+		if (auto difference = Test::differs(mesh, after, Test::CheckAllBits))
+		{
 			throw Test::error("Resulting mesh did not match expected: " + *difference);
 		}
-	} else {
+	}
+	else
+	{
 		throw Test::error("flip_edge rejected operation!");
 	}
 }
@@ -38,7 +46,8 @@ After mesh:
 |    /
 3--4/
 */
-Test test_a2_l1_flip_edge_basic_simple("a2.l1.flip_edge.basic.simple", []() {
+Test test_a2_l1_flip_edge_basic_simple("a2.l1.flip_edge.basic.simple", []()
+									   {
 	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
 		Vec3(-1.0f, 1.1f, 0.0f), Vec3(1.1f, 1.0f, 0.0f),
 		                                            Vec3(2.2f, 0.0f, 0.0f),
@@ -58,8 +67,7 @@ Test test_a2_l1_flip_edge_basic_simple("a2.l1.flip_edge.basic.simple", []() {
 		{0, 2, 1}
 	});
 
-	expect_flip(mesh, edge, after);
-});
+	expect_flip(mesh, edge, after); });
 
 /*
 EDGE CASE
@@ -80,7 +88,8 @@ After mesh:
 |  | /
 3--4/
 */
-Test test_a2_l1_flip_edge_edge_boundary("a2.l1.flip_edge.edge.boundary", []() {
+Test test_a2_l1_flip_edge_edge_boundary("a2.l1.flip_edge.edge.boundary", []()
+										{
 	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
 		Vec3(-1.0f, 1.1f, 0.0f), Vec3(1.1f, 1.0f, 0.0f),
 		                                            Vec3(2.2f, 0.0f, 0.0f),
@@ -93,6 +102,50 @@ Test test_a2_l1_flip_edge_edge_boundary("a2.l1.flip_edge.edge.boundary", []() {
 
 	if (mesh.flip_edge(edge)) {
 		throw Test::error("flip_edge should not work at the boundary.");
-	}
-});
+	} });
 
+// 5 --- 4 --- 3
+// |     |     |
+// |     6     |
+// |     |     |
+// 0 --- 1 --- 2
+Test test_a2_l1_flip_edge_edge_boundary_2("a2.l1.flip_edge.edge.boundary.2", []()
+										  {
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3(0.0f, 0.0f, 0.0f),
+		Vec3(0.5f, 0.0f, 0.0f),
+		Vec3(1.0f, 0.0f, 0.0f), 
+		Vec3(1.0f, 1.0f, 0.0f),
+		Vec3(0.5f, 1.0f, 0.0f), 
+		Vec3(0.0f, 1.0f, 0.0f),
+		Vec3(0.5f, 0.5f, 0.0f)
+	}, {
+		{0, 1, 6, 4, 5},
+		{1, 2, 3, 4, 6}
+	});
+	
+	for (auto &h: mesh.halfedges) {
+		if (mesh.flip_edge(h.edge)) {
+			throw Test::error("SHOULDNT FLIP");
+		};
+	} });
+
+Test test_a2_l1_flip_edge_tetrahedron("a2.l1.flip_edge.tetrahedron", []()
+									  {
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3(0.0f, 0.0f, 0.0f),
+		Vec3(1.0f, 0.0f, 0.0f),
+		Vec3(0.5f, 1.0f, 0.0f),
+		Vec3(0.5f, 0.5f, 1.0f)
+	}, {
+		{0,1,2},
+		{0,3,1},
+		{0,2,3},
+		{1,3,2}
+	});
+
+	for (auto &h:mesh.halfedges) {
+		if (mesh.flip_edge(h.edge)) {
+			throw Test::error("SHOULDNT FLIP");
+		};
+	}; });

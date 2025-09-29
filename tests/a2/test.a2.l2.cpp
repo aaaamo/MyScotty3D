@@ -1,16 +1,23 @@
 #include "test.h"
 #include "geometry/halfedge.h"
+#include <iostream>
 
-static void expect_split(Halfedge_Mesh &mesh, Halfedge_Mesh::EdgeRef edge, Halfedge_Mesh const &after) {
-	if (auto ret = mesh.split_edge(edge)) {
-		if (auto msg = mesh.validate()) {
+static void expect_split(Halfedge_Mesh &mesh, Halfedge_Mesh::EdgeRef edge, Halfedge_Mesh const &after)
+{
+	if (auto ret = mesh.split_edge(edge))
+	{
+		if (auto msg = mesh.validate())
+		{
 			throw Test::error("Invalid mesh: " + msg.value().second);
 		}
 		// check mesh shape:
-		if (auto difference = Test::differs(mesh, after, Test::CheckAllBits)) {
+		if (auto difference = Test::differs(mesh, after, Test::CheckAllBits))
+		{
 			throw Test::error("Resulting mesh did not match expected: " + *difference);
 		}
-	} else {
+	}
+	else
+	{
 		throw Test::error("split_edge rejected operation!");
 	}
 }
@@ -34,7 +41,8 @@ After mesh:
 |  | /
 4--5/
 */
-Test test_a2_l2_split_edge_basic_simple("a2.l2.split_edge.basic.simple", []() {
+Test test_a2_l2_split_edge_basic_simple("a2.l2.split_edge.basic.simple", []()
+										{
 	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
 		Vec3(-1.0f, 1.1f, 0.0f), Vec3(1.1f, 1.0f, 0.0f),
 		                                            Vec3(2.2f, 0.0f, 0.0f),
@@ -56,11 +64,10 @@ Test test_a2_l2_split_edge_basic_simple("a2.l2.split_edge.basic.simple", []() {
 		{2, 5, 3}
 	});
 
-	expect_split(mesh, edge, after);
-});
+	expect_split(mesh, edge, after); });
 
 /*
-EDGE CASE: 
+EDGE CASE:
 
 Initial mesh:
 0--1\
@@ -78,7 +85,8 @@ After mesh:
 |/    | /
 4-----5/
 */
-Test test_a2_l2_split_edge_edge_boundary("a2.l2.split_edge.edge.boundary", []() {
+Test test_a2_l2_split_edge_edge_boundary("a2.l2.split_edge.edge.boundary", []()
+										 {
 	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
 		Vec3(-1.0f, 1.1f, 0.0f), Vec3(1.1f, 1.0f, 0.0f),
 		                                            Vec3(2.2f, 0.0f, 0.0f),
@@ -99,6 +107,27 @@ Test test_a2_l2_split_edge_edge_boundary("a2.l2.split_edge.edge.boundary", []() 
 		{2, 5, 3}
 	});
 
-	expect_split(mesh, edge, after);
-});
+	expect_split(mesh, edge, after); });
 
+Test test_a2_l2_split_edge_triangle("a2.l2.split_edge.triangle", []()
+									{
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3(0.0f, 0.0f, 0.0f),
+		Vec3(1.0f, 0.0f, 0.0f),
+		Vec3(0.5f, 1.0f, 0.0f),
+	}, {
+		{0,1,2}
+	});
+	Halfedge_Mesh::EdgeRef edge = mesh.halfedges.begin()->edge;
+
+	Halfedge_Mesh after = Halfedge_Mesh::from_indexed_faces({
+		Vec3(0.0f, 0.0f, 0.0f),
+		Vec3(0.5f, 0.0f, 0.0f),
+		Vec3(1.0f, 0.0f, 0.0f),
+		Vec3(0.5f, 1.0f, 0.0f),
+	}, {
+		{0,1,3},
+		{1,2,3},
+	});
+
+	expect_split(mesh, edge, after); });
