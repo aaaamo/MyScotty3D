@@ -180,9 +180,24 @@ checking that the operation works in the GUI.
 
 You do not need any screenshots for this task.
 
+<font size="10"> IMPLEMENTED </font>
+
+- took about 2 hours in total for LX5 and LX6
+
 **What edge cases did you handle?**
 
 * Answer here:
+
+- reject if degree of vertex is less than 3
+
+- in bevel_positions, if the given bevel direction is orthogonal to the outgoing edge, just move the distance without
+projection instead.
+
+- for test a2.lx5.bevel_vertex.edge.boundary, the bevel direction is normal to all the edges so after consulting with
+the TA during OH I just implemented a reasonable edge case solution which isn't exactly the same as the after mesh given
+in the test.
+
+- in bevel_positions, reject if an outgoing edge is of length 0.
 
 Your completion will be graded based on the reference `test.a2.lx5.cpp` file and
 checking that the operation works in the GUI.
@@ -191,9 +206,17 @@ checking that the operation works in the GUI.
 
 You do not need any screenshots for this task.
 
+<font size="10"> IMPLEMENTED </font>
+
+- took about 2 hours in total for LX5 and LX6
+
 **What edge cases did you handle?**
 
 * Answer here:
+
+- reject if edge is on boundary
+
+- reject if degree of both vertices of the edge are less than 3
 
 Your completion will be graded based on the reference `test.a2.lx6.cpp` file and
 checking that the operation works in the GUI.
