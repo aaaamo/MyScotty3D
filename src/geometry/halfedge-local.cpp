@@ -1151,7 +1151,6 @@ void Halfedge_Mesh::bevel_positions(FaceRef face, std::vector<Vec3> const &start
 	for (uint32_t i = 0; i < new_positions.size(); i++)
 	{
 		Vec3 pos = start_positions[i];
-		VertexRef v = h->vertex;
 		VertexRef v_out = h->twin->next->next->vertex;
 
 		Vec3 out_vec = v_out->position - pos;
