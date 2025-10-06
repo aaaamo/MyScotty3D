@@ -101,7 +101,6 @@ void Halfedge_Mesh::triangulate()
 		HalfedgeRef h2 = h1->next;
 		HalfedgeRef h3 = h2->next;
 		VertexRef v0 = h1->vertex;
-		VertexRef v1 = h2->vertex;
 		VertexRef v2 = h3->vertex;
 
 		FaceRef nf = emplace_face();
