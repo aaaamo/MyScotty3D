@@ -4,90 +4,107 @@
 #include <map>
 #include <set>
 
-static void expect_triangulate(Halfedge_Mesh& mesh) {
+static void expect_triangulate(Halfedge_Mesh &mesh)
+{
 	size_t numEdges = mesh.edges.size();
 	size_t numFaces = mesh.faces.size();
 
 	// count the number of triangle edges/faces to be generated after triangulation
 	size_t c = 0;
-	for (Halfedge_Mesh::FaceRef f = mesh.faces.begin(); f != mesh.faces.end(); f++) {
-		if (!f->boundary && f->degree() > 3) c += f->degree() - 3;
+	for (Halfedge_Mesh::FaceRef f = mesh.faces.begin(); f != mesh.faces.end(); f++)
+	{
+		if (!f->boundary && f->degree() > 3)
+			c += f->degree() - 3;
 	}
 
 	std::map<uint32_t, Vec3> verts;
-	for (Halfedge_Mesh::VertexRef v = mesh.vertices.begin(); v != mesh.vertices.end(); v++) {
+	for (Halfedge_Mesh::VertexRef v = mesh.vertices.begin(); v != mesh.vertices.end(); v++)
+	{
 		verts.insert({v->id, v->position});
 	}
 	std::set<uint32_t> edge_ids;
-	for (Halfedge_Mesh::EdgeRef e = mesh.edges.begin(); e != mesh.edges.end(); e++) {
+	for (Halfedge_Mesh::EdgeRef e = mesh.edges.begin(); e != mesh.edges.end(); e++)
+	{
 		edge_ids.insert(e->id);
 	}
 	std::set<uint32_t> face_ids;
-	for (Halfedge_Mesh::FaceRef f = mesh.faces.begin(); f != mesh.faces.end(); f++) {
+	for (Halfedge_Mesh::FaceRef f = mesh.faces.begin(); f != mesh.faces.end(); f++)
+	{
 		face_ids.insert(f->id);
 	}
 
-	//TODO: halfedges + twin relationships should all be preserved
-	//TODO: shape of boundary faces should be preserved
+	// TODO: halfedges + twin relationships should all be preserved
+	// TODO: shape of boundary faces should be preserved
 
 	mesh.triangulate();
 
-	if (auto msg = mesh.validate()) {
+	if (auto msg = mesh.validate())
+	{
 		throw Test::error("Invalid mesh: " + msg.value().second);
 	}
 
 	// check that all faces are degree 3
-	for (Halfedge_Mesh::FaceRef f = mesh.faces.begin(); f != mesh.faces.end(); f++) {
-		if (!f->boundary && f->degree() != 3) {
+	for (Halfedge_Mesh::FaceRef f = mesh.faces.begin(); f != mesh.faces.end(); f++)
+	{
+		if (!f->boundary && f->degree() != 3)
+		{
 			throw Test::error("Triangulation created a non-triangular face!");
 		}
 	}
 
 	// check for expected number of elements
-	if (numEdges + c != mesh.edges.size()) {
+	if (numEdges + c != mesh.edges.size())
+	{
 		throw Test::error("Triangulation did not create the expected number of edges!");
 	}
-	if (numFaces + c != mesh.faces.size()) {
+	if (numFaces + c != mesh.faces.size())
+	{
 		throw Test::error("Triangulation did not create the expected number of faces!");
 	}
 
 	// check that original elements are preserved
 	std::map<uint32_t, Vec3> new_verts;
-	for (Halfedge_Mesh::VertexRef v = mesh.vertices.begin(); v != mesh.vertices.end(); v++) {
+	for (Halfedge_Mesh::VertexRef v = mesh.vertices.begin(); v != mesh.vertices.end(); v++)
+	{
 		new_verts.insert({v->id, v->position});
 	}
 	std::set<uint32_t> new_edge_ids;
-	for (Halfedge_Mesh::EdgeRef e = mesh.edges.begin(); e != mesh.edges.end(); e++) {
+	for (Halfedge_Mesh::EdgeRef e = mesh.edges.begin(); e != mesh.edges.end(); e++)
+	{
 		new_edge_ids.insert(e->id);
 	}
 	std::set<uint32_t> new_face_ids;
-	for (Halfedge_Mesh::FaceRef f = mesh.faces.begin(); f != mesh.faces.end(); f++) {
+	for (Halfedge_Mesh::FaceRef f = mesh.faces.begin(); f != mesh.faces.end(); f++)
+	{
 		new_face_ids.insert(f->id);
 	}
 
-	if (verts != new_verts) {
+	if (verts != new_verts)
+	{
 		throw Test::error("Triangulation should preserve original vertices!");
 	}
 	std::set<uint32_t> diff;
 	std::set_difference(edge_ids.begin(), edge_ids.end(), new_edge_ids.begin(), new_edge_ids.end(),
-	                    std::inserter(diff, diff.end()));
-	if (diff.size() != 0) {
+						std::inserter(diff, diff.end()));
+	if (diff.size() != 0)
+	{
 		throw Test::error("Triangulation should preserve original edges!");
 	}
 	std::set_difference(face_ids.begin(), face_ids.end(), new_face_ids.begin(), new_face_ids.end(),
-	                    std::inserter(diff, diff.end()));
-	if (diff.size() != 0) {
+						std::inserter(diff, diff.end()));
+	if (diff.size() != 0)
+	{
 		throw Test::error("Triangulation should preserve original faces!");
 	}
 }
-
 
 /*
 BASIC CASE
 
 Triangulates a square
 */
-Test test_a2_g1_triangulate_basic_square("a2.g1.triangulate.basic.square", []() {
+Test test_a2_g1_triangulate_basic_square("a2.g1.triangulate.basic.square", []()
+										 {
 	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
 		Vec3{-0.5f, 0.0f,-0.5f}, Vec3{-0.5f, 0.0f, 0.5f},
 		Vec3{ 0.5f, 0.0f,-0.5f}, Vec3{ 0.5f, 0.0f, 0.5f}
@@ -96,15 +113,15 @@ Test test_a2_g1_triangulate_basic_square("a2.g1.triangulate.basic.square", []() 
 	});
 
 	// Many different implementations of triangulating, so just checks that all the faces are triangles and some other misc things
-	expect_triangulate(mesh);
-});
+	expect_triangulate(mesh); });
 
 /*
 BASIC CASE
 
 Triangulates a cube with square faces
 */
-Test test_a2_g1_triangulate_basic_quad_cube("a2.g1.triangulate.basic.quad_cube", []() {
+Test test_a2_g1_triangulate_basic_quad_cube("a2.g1.triangulate.basic.quad_cube", []()
+											{
 	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
 		Vec3{-1.0f, 1.0f, 1.0f}, 	Vec3{-1.0f, 1.0f, -1.0f},
 		Vec3{-1.0f, -1.0f, -1.0f}, 	Vec3{-1.0f, -1.0f, 1.0f},
@@ -120,5 +137,98 @@ Test test_a2_g1_triangulate_basic_quad_cube("a2.g1.triangulate.basic.quad_cube",
 	});
 
 	// Many different implementations of triangulating, so just checks that all the faces are triangles and some other misc things
-	expect_triangulate(mesh);
-});
+	expect_triangulate(mesh); });
+
+/*
+Triangulates an L-shaped concave polygon
+*/
+Test test_a2_g1_triangulate_concave_L("a2.g1.triangulate.concave.L", []()
+									  {
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3{0.0f, 0.0f, 0.0f}, Vec3{2.0f, 0.0f, 0.0f},
+		Vec3{2.0f, 0.0f, 1.0f}, Vec3{1.0f, 0.0f, 1.0f},
+		Vec3{1.0f, 0.0f, 2.0f}, Vec3{0.0f, 0.0f, 2.0f}
+	},{
+		{0, 1, 2, 3, 4, 5}
+	});
+
+	expect_triangulate(mesh); });
+
+/*
+Triangulates a chevron/arrow-shaped concave polygon
+*/
+Test test_a2_g1_triangulate_concave_chevron("a2.g1.triangulate.concave.chevron", []()
+											{
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3{0.0f, 0.0f, 0.0f}, Vec3{1.0f, 0.0f, 1.0f},
+		Vec3{2.0f, 0.0f, 0.0f}, Vec3{1.5f, 0.0f, 0.5f},
+		Vec3{1.0f, 0.0f, 0.0f}, Vec3{0.5f, 0.0f, 0.5f}
+	},{
+		{0, 1, 2, 3, 4, 5}
+	});
+
+	expect_triangulate(mesh); });
+
+/*
+Triangulates a star-shaped concave polygon
+*/
+Test test_a2_g1_triangulate_concave_star("a2.g1.triangulate.concave.star", []()
+										 {
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3{ 0.0f, 0.0f,  1.0f}, Vec3{ 0.3f, 0.0f,  0.3f},
+		Vec3{ 1.0f, 0.0f,  0.0f}, Vec3{ 0.3f, 0.0f, -0.3f},
+		Vec3{ 0.0f, 0.0f, -1.0f}, Vec3{-0.3f, 0.0f, -0.3f},
+		Vec3{-1.0f, 0.0f,  0.0f}, Vec3{-0.3f, 0.0f,  0.3f}
+	},{
+		{0, 1, 2, 3, 4, 5, 6, 7}
+	});
+
+	expect_triangulate(mesh); });
+
+/*
+Triangulates a C-shaped concave polygon
+*/
+Test test_a2_g1_triangulate_concave_C("a2.g1.triangulate.concave.C", []()
+									  {
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3{0.0f, 0.0f, 0.0f}, Vec3{2.0f, 0.0f, 0.0f},
+		Vec3{2.0f, 0.0f, 0.5f}, Vec3{0.5f, 0.0f, 0.5f},
+		Vec3{0.5f, 0.0f, 1.5f}, Vec3{2.0f, 0.0f, 1.5f},
+		Vec3{2.0f, 0.0f, 2.0f}, Vec3{0.0f, 0.0f, 2.0f}
+	},{
+		{0, 1, 2, 3, 4, 5, 6, 7}
+	});
+
+	expect_triangulate(mesh); });
+
+/*
+Triangulates a concave polygon with multiple reflex vertices
+*/
+Test test_a2_g1_triangulate_concave_complex("a2.g1.triangulate.concave.complex", []()
+											{
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3{0.0f, 0.0f, 0.0f}, Vec3{1.0f, 0.0f, 0.0f},
+		Vec3{1.0f, 0.0f, 0.5f}, Vec3{0.5f, 0.0f, 0.5f},
+		Vec3{0.5f, 0.0f, 1.0f}, Vec3{1.0f, 0.0f, 1.0f},
+		Vec3{1.0f, 0.0f, 1.5f}, Vec3{0.0f, 0.0f, 1.5f}
+	},{
+		{0, 1, 2, 3, 4, 5, 6, 7}
+	});
+
+	expect_triangulate(mesh); });
+
+/*
+Triangulates a narrow concave notch
+*/
+Test test_a2_g1_triangulate_concave_notch("a2.g1.triangulate.concave.notch", []()
+										  {
+	Halfedge_Mesh mesh = Halfedge_Mesh::from_indexed_faces({
+		Vec3{0.0f, 0.0f, 0.0f}, Vec3{2.0f, 0.0f, 0.0f},
+		Vec3{2.0f, 0.0f, 2.0f}, Vec3{1.1f, 0.0f, 2.0f},
+		Vec3{1.1f, 0.0f, 0.5f}, Vec3{0.9f, 0.0f, 0.5f},
+		Vec3{0.9f, 0.0f, 2.0f}, Vec3{0.0f, 0.0f, 2.0f}
+	},{
+		{0, 1, 2, 3, 4, 5, 6, 7}
+	});
+
+	expect_triangulate(mesh); });

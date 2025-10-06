@@ -96,10 +96,18 @@ checking that the operation works in the GUI.
 
 You do not need any screenshots for this task.
 
+- Took about 30 min to an hour
+
+- Referenced https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf
+
+- Triangulation by ear clipping should take care of convex mesh faces, but could be better optimized
+
 Your completion will be graded based on the reference `test.a2.g1.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2G2 FINAL
+
+- Took maybe 5 min.
 
 You do not need any screenshots for this task.
 
@@ -107,6 +115,10 @@ Your completion will be graded based on the reference `test.a2.g2.cpp` file and
 checking that the operation works in the GUI.
 
 (##) A2G3 FINAL
+
+- Took around 20 min.
+
+- Boundary edge case handled.
 
 You do not need any screenshots for this task.
 
@@ -125,10 +137,18 @@ checking that the operation works in the GUI.
 (##) CREATED MODEL FINAL
 
 Image of model in the GUI:
+
 <div class="twentytwenty-container">
-    <img src="A2-writeup/reference/model-image.png" alt="Your creation">
+    <img src="A2-writeup/model.png" alt="model.png">
 </div>
+
 Explanation of what it is and how you made it:
+
+- I started from a torus, made some extrusion/bevels and then repeated catmull-clark division - triangulation - simplify
+
+- until everything got smoothened out and triangles are all different sizes.
+
+- It kinda looks like a sea turtle.
 
 Any free model sources you need to credit?
 
@@ -256,7 +276,14 @@ checking that the operation works in the GUI.
 
 **Global Operation Completed: **
 
+<font size="10"> IMPLEMENTED </font>
+
 You do not need any screenshots for this task.
+
+- Took like a few hours. Debugging was a real pain cause it was hard to tell where sth went wrong.
+
+- Was debugging for like an hour then found out that I didn't update the halfedge to the twin->next one while
+traversing...
 
 Your completion will be graded based on the reference file for the operation of choice and
 checking that the operation works in the GUI.
