@@ -551,9 +551,6 @@ bool Halfedge_Mesh::simplify(float ratio)
 
 	for (EdgeRef e = edges.begin(); e != edges.end(); ++e)
 	{
-		VertexRef v1 = e->halfedge->vertex;
-		VertexRef v2 = e->halfedge->twin->vertex;
-
 		Edge_Record er(vertex_quadrics, e);
 		edge_records[e->id] = er;
 
