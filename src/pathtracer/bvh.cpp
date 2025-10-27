@@ -76,8 +76,6 @@ namespace PT
 		std::function<void(size_t)> divide_node = [&](size_t node_idx)
 		{
 			Node &node = nodes[node_idx];
-			node.l;
-			node.r;
 
 			uint32_t best_axis = 0;
 			Node best_l;
