@@ -1,6 +1,6 @@
 **Assignment 3 Report**
 
-AndrewID: XXXX
+AndrewID: daehongk
 
 (##) About this template
 
@@ -12,51 +12,65 @@ AndrewID: XXXX
 
 (##) A3T1 CHECKPOINT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a3.task1.cpp` file and 
+Your completion will be graded based on the reference `test.a3.task1.cpp` file and
 checking that camera rays properly fill up the camera view frustrum.
+
+- took around 10 min. No problems encountered.
 
 (##) A3T2 CHECKPOINT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a3.task2.*.cpp` files and 
+Your completion will be graded based on the reference `test.a3.task2.*.cpp` files and
 checking that rendering spheres and triangles works properly.
+
+- took around 30 min. No problems encountered.
 
 (##) A3T3 CHECKPOINT
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a3.task3.*.cpp` files and 
+Your completion will be graded based on the reference `test.a3.task3.*.cpp` files and
 checking that the generated BVH looks reasonable and rendering large meshes is fast and correct.
+
+took about 3 hours.
+
+For the bbox hit I read the scratchapixel article and used its code and altered it to fit the assignment.
+
+Traversing part took the most amount of time because I had a logical error that took like 2 hours to debug and find
+and in the end it was just a one line edit solution. (I didn't account for the case where the closer child node
+traversal came back without a hit)
+
+
 
 (##) A3T4 FINAL
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a3.task4.*.cpp` files and 
+Your completion will be graded based on the reference `test.a3.task4.*.cpp` files and
 checking that rendering lambertian materials look correct.
 
 (##) A3T5 FINAL
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a3.task5.*.cpp` files and 
+Your completion will be graded based on the reference `test.a3.task5.*.cpp` files and
 checking that rendering mirror, refract and glass materials look correct.
 
 (##) A3T6 FINAL
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a3.task6.*.cpp` files and 
+Your completion will be graded based on the reference `test.a3.task6.*.cpp` files and
 checking that there is an improvement between using task 4 direct lighting and using task 6 direct lighting.
 
 (##) A3T7 FINAL
 
-You do not need any screenshots for this task. 
+You do not need any screenshots for this task.
 
-Your completion will be graded based on the reference `test.a1.task7.*.cpp` file and 
+Your completion will be graded based on the reference `test.a1.task7.*.cpp` file and
 checking that rendering scenes with environment lighting yields correct sampling.
 
 (##) RENDERED IMAGE FINAL
@@ -78,13 +92,20 @@ Use this section to explain any extra credit implementations you have made.
 Use this section to provide feedback about the assignment.
 
 <!--- Markdeep & image comparison library - probably no need to change anything below -->
-<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style>
-<script src="resources/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+<style class="fallback">
+    body {
+        visibility: hidden;
+        white-space: pre;
+        font-family: monospace
+    }
+</style>
+<script src="resources/markdeep.min.js"></script>
+<script>window.alreadyProcessedMarkdeep || (document.body.style.visibility = "visible")</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="resources/jquery.event.move.js"></script>
 <script src="resources/jquery.twentytwenty.js"></script>
 <link href="resources/offcanvas.css" rel="stylesheet">
 <link href="resources/twentytwenty.css" rel="stylesheet" type="text/css" />
 <script>
-$(window).load(function(){$(".twentytwenty-container").twentytwenty({default_offset_pct: 0.5});});
+    $(window).load(function () { $(".twentytwenty-container").twentytwenty({ default_offset_pct: 0.5 }); });
 </script>

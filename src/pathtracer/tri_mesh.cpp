@@ -73,13 +73,6 @@ namespace PT
 		Vec3 e2 = v_2.position - v_0.position;
 		const Vec3 &d = ray.dir;
 
-		float scalar = 1.0f / dot(cross(e1, d), e2);
-		float u = -scalar * dot(cross(s, e2), d);
-		float v = scalar * dot(cross(e1, d), s);
-		float t = -scalar * dot(cross(s, e2), e1);
-
-		bool hit = (u >= 0) && (v >= 0) && (u + v <= 1) && (t >= ray.dist_bounds.x) && (t <= ray.dist_bounds.y);
-
 		Trace ret;
 		ret.origin = ray.point;
 		ret.hit = false;	   // was there an intersection?
@@ -89,6 +82,19 @@ namespace PT
 							   // (this should be interpolated between the three vertex normals)
 		ret.uv = Vec2{};	   // What was the uv associated with the point of intersection?
 							   // (this should be interpolated between the three vertex uvs)
+
+		float denom = dot(cross(e1, d), e2);
+		if (denom == 0)
+		{
+			return ret;
+		}
+
+		float coeff = 1.0f / denom;
+		float u = -coeff * dot(cross(s, e2), d);
+		float v = coeff * dot(cross(e1, d), s);
+		float t = -coeff * dot(cross(s, e2), e1);
+
+		bool hit = (u >= 0) && (v >= 0) && (u + v <= 1) && (t >= ray.dist_bounds.x) && (t <= ray.dist_bounds.y);
 
 		if (hit)
 		{

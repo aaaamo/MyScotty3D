@@ -82,7 +82,7 @@ namespace PT
 			uint32_t best_axis = 0;
 			Node best_l;
 			Node best_r;
-			float best_SAH = -1.0f;
+			float best_SAH = node.bbox.surface_area() * float(node.size);
 
 			bool best_found = false;
 
@@ -123,7 +123,7 @@ namespace PT
 
 					float SAH = l_bbox.surface_area() * float(l_size) + r_bbox.surface_area() * float(r_size);
 
-					if (SAH < best_SAH || best_SAH < 0.0f)
+					if (SAH < best_SAH)
 					{
 						best_SAH = SAH;
 						best_axis = axis;
