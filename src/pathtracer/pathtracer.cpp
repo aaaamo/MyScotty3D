@@ -29,15 +29,31 @@ namespace PT
 		Spectrum radiance = sum_delta_lights(hit);
 
 		// TODO: ask hit.bsdf to sample an in direction that would scatter out along hit.out_dir
+		auto scat = hit.bsdf.scatter(rng, hit.out_dir, hit.uv);
 
 		// TODO: rotate that direction into world coordinates
+		Vec3 world_dir = hit.object_to_world.rotate(scat.direction);
 
 		// TODO: construct a ray travelling in that direction
 		//  NOTE: because we want emitted light only, can use depth = 0 for the ray
+		Ray ray;
+		ray.point = hit.pos;
+		ray.dir = world_dir;
+		ray.dist_bounds.x = 1e-3f;
+		ray.depth = 0;
 
 		// TODO: trace() the ray to get the emitted light (first part of the return value)
+		Spectrum emissive = trace(rng, ray).first;
 
 		// TODO: weight properly depending on the probability of the sampled scattering direction and add to radiance
+		if (hit.bsdf.is_specular())
+		{
+			radiance += emissive * scat.attenuation;
+		}
+		else
+		{
+			radiance += emissive * scat.attenuation / hit.bsdf.pdf(hit.out_dir, scat.direction);
+		}
 
 		return radiance;
 	}
@@ -47,9 +63,44 @@ namespace PT
 		// A3T6: Pathtracer - direct light sampling (mixture sampling)
 		//  TODO (PathTracer): Task 6
 
+		if (hit.bsdf.is_specular())
+		{
+			return sample_direct_lighting_task4(rng, hit);
+		}
+
 		// For task 6, we want to upgrade our direct light sampling procedure to also
 		// sample area lights using mixture sampling.
 		Spectrum radiance = sum_delta_lights(hit);
+
+		auto scat = hit.bsdf.scatter(rng, hit.out_dir, hit.uv);
+
+		Vec3 local_dir;
+		Vec3 world_dir;
+		if (rng.coin_flip(0.5f))
+		{
+			local_dir = scat.direction;
+			world_dir = hit.object_to_world.rotate(scat.direction);
+		}
+		else
+		{
+			world_dir = sample_area_lights(rng, hit.pos);
+			local_dir = hit.world_to_object.rotate(world_dir);
+		}
+
+		float bsdf_pdf = hit.bsdf.pdf(hit.out_dir, local_dir);
+		float light_pdf = area_lights_pdf(hit.pos, world_dir);
+		float mix_pdf = 0.5f * bsdf_pdf + 0.5f * light_pdf;
+
+		Ray ray;
+		ray.point = hit.pos;
+		ray.dir = world_dir;
+		ray.dist_bounds.x = 1e-3f;
+		ray.depth = 0;
+
+		Spectrum emissive = trace(rng, ray).first;
+		Spectrum bsdf_value = hit.bsdf.evaluate(hit.out_dir, local_dir, hit.uv);
+
+		radiance += emissive * bsdf_value / mix_pdf;
 
 		// Example of using log_ray():
 		if constexpr (LOG_AREA_LIGHT_RAYS)
@@ -71,17 +122,32 @@ namespace PT
 		// NOTE: this function and sample_direct_lighting_task4() perform very similar tasks.
 
 		// TODO: ask hit.bsdf to sample an in direction that would scatter out along hit.out_dir
+		auto scat = hit.bsdf.scatter(rng, hit.out_dir, hit.uv);
 
 		// TODO: rotate that direction into world coordinates
+		Vec3 world_dir = hit.object_to_world.rotate(scat.direction);
 
 		// TODO: construct a ray travelling in that direction
 		//  NOTE: be sure to reduce the ray depth! otherwise infinite recursion is possible
+		Ray ray;
+		ray.point = hit.pos;
+		ray.dir = world_dir;
+		ray.dist_bounds.x = 1e-3f;
+		ray.depth = hit.depth - 1;
 
 		// TODO: trace() the ray to get the reflected light (the second part of the return value)
+		Spectrum radiance = trace(rng, ray).second;
 
 		// TODO: weight properly depending on the probability of the sampled scattering direction and set radiance
+		if (hit.bsdf.is_specular())
+		{
+			radiance *= scat.attenuation;
+		}
+		else
+		{
+			radiance *= scat.attenuation / hit.bsdf.pdf(hit.out_dir, scat.direction);
+		}
 
-		Spectrum radiance;
 		return radiance;
 	}
 

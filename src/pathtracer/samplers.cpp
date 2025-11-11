@@ -128,7 +128,14 @@ namespace Samplers
 		// Generate a uniformly random point on the unit sphere.
 		// Tip: start with Hemisphere::Uniform
 
-		return Vec3{};
+		Hemisphere::Uniform sampler;
+		Vec3 s = sampler.sample(rng);
+		if (rng.coin_flip(0.5f))
+		{
+			s = -s;
+		}
+
+		return s;
 	}
 
 	float Sphere::Uniform::pdf(Vec3 dir) const
@@ -146,6 +153,31 @@ namespace Samplers
 		const auto [_w, _h] = image.dimension();
 		w = _w;
 		h = _h;
+
+		_pdf.resize(w * h);
+		_cdf.resize(w * h);
+
+		float sum = 0.0f;
+		for (uint32_t y = 0; y < h; y++)
+		{
+			float sin_theta = std::sin(PI_F * (1 - (y + 0.5f) / h));
+			for (uint32_t x = 0; x < w; x++)
+			{
+				Spectrum radiance = image.at(x, y);
+				float luminance = radiance.luma();
+				float pdf_now = luminance * sin_theta;
+				_pdf[y * w + x] = pdf_now;
+				sum += pdf_now;
+			}
+		}
+
+		float cdf_now = 0.0f;
+		for (uint32_t i = 0; i < _pdf.size(); i++)
+		{
+			_pdf[i] /= sum;
+			cdf_now += _pdf[i];
+			_cdf[i] = cdf_now;
+		}
 	}
 
 	Vec3 Sphere::Image::sample(RNG &rng) const
@@ -154,14 +186,37 @@ namespace Samplers
 		{
 			// Step 1: Uniform sampling
 			// Declare a uniform sampler and return its sample
-			return Vec3{};
+			Sphere::Uniform sampler;
+			return sampler.sample(rng);
 		}
 		else
 		{
 			// Step 2: Importance sampling
 			// Use your importance sampling data structure to generate a sample direction.
 			// Tip: std::upper_bound
-			return Vec3{};
+			if (w * h == 0)
+			{
+				Sphere::Uniform sampler;
+				return sampler.sample(rng);
+			}
+
+			float p = rng.unit();
+			uint32_t idx = (uint32_t)(std::upper_bound(_cdf.begin(), _cdf.end(), p) - _cdf.begin());
+
+			uint32_t y = idx / w;
+			uint32_t x = idx % w;
+
+			float u = (x + 0.5f) / w;
+			float v = 1 - (y + 0.5f) / h;
+			float phi = 2 * PI_F * u;
+			float theta = PI_F * v;
+
+			Vec3 s = Vec3(
+				std::sin(theta) * std::cos(phi),
+				std::cos(theta),
+				std::sin(theta) * std::sin(phi));
+
+			return s;
 		}
 	}
 
@@ -171,13 +226,34 @@ namespace Samplers
 		{
 			// Step 1: Uniform sampling
 			// Declare a uniform sampler and return its pdf
-			return 0.f;
+			return 1.0f / (4.0f * PI_F);
 		}
 		else
 		{
 			// A3T7 - image sampler importance sampling pdf
 			// What is the PDF of this distribution at a particular direction?
-			return 0.f;
+			if (w * h == 0)
+			{
+				return 1.0f / (4.0f * PI_F);
+			}
+
+			float theta = std::acos(dir.y);
+			float phi = std::atan2(dir.z, dir.x);
+			if (phi < 0.0f)
+			{
+				phi += 2.0f * PI_F;
+			}
+
+			uint32_t x = uint32_t(phi / (2 * PI_F) * w);
+			uint32_t y = uint32_t((1 - theta / PI_F) * h);
+
+			uint32_t idx = y * w + x;
+			if (idx < 0 || idx >= w * h)
+			{
+				return 0.0f;
+			}
+
+			return _pdf[idx] * w * h / (2 * PI_F * PI_F * std::sin(theta));
 		}
 	}
 
