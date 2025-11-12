@@ -3,8 +3,8 @@
 	"transforms":{
 		"Camera_transform":{
 			"parent":null,
-			"translation":[-1.8543598651885986,2.7351768016815186,1.0153499841690063],
-			"rotation":[-0.31904688477516174,-0.4961145222187042,-0.2024826556444168,0.7817162275314331],
+			"translation":[1.4271005392074585,1.4518213272094727,1.7156000137329102],
+			"rotation":[-0.13951557874679565,0.35596099495887756,0.05383671075105667,0.9224580526351929],
 			"scale":[1,1,1]
 		},
 		"Cow_transform":{
@@ -46,7 +46,7 @@
 		"Texture":{
 			"type":"Image",
 			"sampler":"nearest",
-			"image":"../textures/outdoor_chapel_4k.exr"
+			"image":"hdr64:cmF3ZgAAAAAAAAAA"
 		},
 		"white":{
 			"type":"Constant",

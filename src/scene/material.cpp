@@ -75,6 +75,7 @@ namespace Materials
 		r0 = r0 * r0;
 		float cos_theta = std::abs(in_dir.y);
 		float fr = r0 + (1.0f - r0) * (float)std::pow(1.0f - cos_theta, 5);
+		fr = std::clamp(fr, 0.0f, 1.0f);
 
 		return fr;
 	}
@@ -88,8 +89,7 @@ namespace Materials
 		// Note that for Scotty3D, y is the 'up' direction.
 
 		Spectrum spec = albedo.lock()->evaluate(uv);
-		float cos_theta = in.y / in.norm();
-		spec = spec / PI_F * cos_theta;
+		spec *= pdf(out, in);
 		return spec;
 	}
 
