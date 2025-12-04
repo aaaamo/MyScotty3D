@@ -42,8 +42,8 @@ bool Particles::Particle::update(const PT::Aggregate &scene, Vec3 const &gravity
 			if (t > 0)
 			{
 				position += velocity * t;
-				velocity += gravity * t;
 				velocity = velocity - 2 * dot(normal, velocity) * normal;
+				velocity += gravity * t;
 				age -= t;
 				return update(scene, gravity, radius, dt - t);
 			}
