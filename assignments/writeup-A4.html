@@ -36,22 +36,35 @@ You do not need any screenshots for this task.
 Your completion will be graded based on the reference `test.a4.task3.*.cpp` files and
 checking that the skeleton moves correctly when the bones are moved.
 
+- took about 30 mins. No problems encountered.
+
 (##) A4T4 FINAL
 
-Do you want to use the reference A3T2 solutions for this task: ____ (yes/no)
+Do you want to use the reference A3T2 solutions for this task: no (yes/no)
 
 You do not need any screenshots for this task.
 
 Your completion will be graded based on the reference `test.a4.task4.*.cpp` files and
 checking that particle simulation behaves correctly and does not go through any surface.
 
+- took about an hour. Second particles test didn't pass but the simulation looks fine. In my implementation the particle
+bounces higher than the starting point after hitting the ground (started from 1, bounced upto 1.04), meaning the total
+energy increased. The expected outcome for the test shows lower energy than what it started with, so I'm not sure what's
+going on there. Also if you solve the problem with pure physics, the expected answer doesn't make sense either.
+
 (##) ANIMATED VIDEO FINAL
 
 Your animation:
 <div class="twentytwenty-container">
-    <img src="A4-writeup/reference/animation.mov" alt="Your creation">
+    <!-- <img src="A4-writeup/reference/animation.mp4" alt="Your creation"> -->
+    <video width="1280" height="720" controls>
+        <source src="A4-writeup/reference/animation.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 </div>
 Explanation of what it is and how you made it:
+
+Slo-mo video of David Beckham taking a free kick. I used the human.js3d rig and a sphere for the soccer ball.
 
 Any free model sources you need to credit?
 
